@@ -12,7 +12,6 @@ pub enum Event {
 }
 
 use State::*;
-use Event::*;
 
 const STATES_COUNT: usize = 2;
 const EVENTS_COUNT: usize = 2;
