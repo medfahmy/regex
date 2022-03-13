@@ -52,6 +52,20 @@ impl Regex {
         }
     }
     fn compile_regex(src: &str) -> Self {
+        /*
+        let events = ['a' as usize, 'b' as usize, 'c' as usize, REGEX_END];
+
+        // failed state
+        regex.push(RegexCol::new());
+
+        // FsmColumn 1
+        for event in events.iter() {
+            let mut col = RegexCol::new();
+            col.ts[*event] = regex.cols.len() + 1;
+            regex.push(col);
+        }
+        */
+
         todo!()
     }
 
@@ -76,21 +90,9 @@ impl Regex {
 }
 
 fn main() {
-    let mut regex = Regex::new();
+    let mut regex = Regex::compile_regex("abc$");
 
-    let events = ['a' as usize, 'b' as usize, 'c' as usize, REGEX_END];
-
-    // failed state
-    regex.push(RegexCol::new());
-
-    // FsmColumn 1
-    for event in events.iter() {
-        let mut col = RegexCol::new();
-        col.ts[*event] = regex.cols.len() + 1;
-        regex.push(col);
-    }
-
-    // fsm.dump();
+    // regex.dump();
 
     let inputs = ["hello world", "abc", "abcd"];
 
