@@ -8,8 +8,8 @@ mod turnstile;
 
 type RegexIndex = usize;
 
-const REGEX_COL_SIZE: RegexIndex = 130; 
-const REGEX_END: RegexIndex = 129; 
+const REGEX_COL_SIZE: RegexIndex = 130;
+const REGEX_END: RegexIndex = 129;
 
 struct RegexCol {
     ts: [RegexIndex; REGEX_COL_SIZE],
@@ -17,7 +17,9 @@ struct RegexCol {
 
 impl RegexCol {
     fn new() -> Self {
-        RegexCol { ts: [0; REGEX_COL_SIZE] }
+        RegexCol {
+            ts: [0; REGEX_COL_SIZE],
+        }
     }
 
     fn fill_range(&mut self, range: Range<char>, state: RegexIndex) {
@@ -29,7 +31,7 @@ impl RegexCol {
 
 struct Regex {
     cols: Vec<RegexCol>,
-} 
+}
 
 impl Regex {
     fn new() -> Self {
@@ -48,47 +50,44 @@ impl Regex {
             }
             println!();
         }
-
     }
-}
+    fn compile_regex(src: &str) -> Self {
+        todo!()
+    }
 
-fn compile_regex(regex: &Regex, src: &str) -> Regex {
+    fn match_regex(&self, input: &str) -> bool {
+        let mut state = 1;
+        for c in input.chars() {
+            if state == 0 || state >= self.cols.len() {
+                break;
+            }
 
-    todo!()
-}
-
-fn match_regex(regex: &Regex, input: &str) -> bool {
-    let mut state = 1;
-    for c in input.chars() {
-        if state == 0 || state >= regex.cols.len() {
-            break;
+            state = self.cols[state].ts[c as usize];
         }
 
-        state = regex.cols[state].ts[c as usize];
-    }
+        if state == 0 {
+            return false;
+        } else if state < self.cols.len() {
+            state = self.cols[state].ts[REGEX_END];
+        }
 
-    if state == 0 {
-        return false;
-    } else if state < regex.cols.len() {
-        state = regex.cols[state].ts[REGEX_END];
+        return state >= self.cols.len();
     }
-
-    return state >= regex.cols.len();
 }
 
 fn main() {
-    let mut fsm = Regex::new();
+    let mut regex = Regex::new();
 
     let events = ['a' as usize, 'b' as usize, 'c' as usize, REGEX_END];
 
     // failed state
-    fsm.push(RegexCol::new());
+    regex.push(RegexCol::new());
 
     // FsmColumn 1
     for event in events.iter() {
         let mut col = RegexCol::new();
-        col.ts[*event] = fsm.cols.len() + 1;
-        fsm.push(col);
+        col.ts[*event] = regex.cols.len() + 1;
+        regex.push(col);
     }
 
     // fsm.dump();
@@ -96,7 +95,7 @@ fn main() {
     let inputs = ["hello world", "abc", "abcd"];
 
     for input in inputs {
-        println!("{} => {:?}", input, match_regex(&fsm, input));
+        println!("{} => {:?}", input, regex.match_regex(input));
     }
 
     // let mut col = FsmCol::new();
