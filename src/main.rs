@@ -69,7 +69,7 @@ impl Regex {
         todo!()
     }
 
-    fn match_regex(&self, input: &str) -> bool {
+    fn match_str(&self, input: &str) -> bool {
         let mut state = 1;
         for c in input.chars() {
             if state == 0 || state >= self.cols.len() {
@@ -97,7 +97,7 @@ fn main() {
     let inputs = ["hello world", "abc", "abcd"];
 
     for input in inputs {
-        println!("{} => {:?}", input, regex.match_regex(input));
+        println!("{} => {:?}", input, regex.match_str(input));
     }
 
     // let mut col = FsmCol::new();
