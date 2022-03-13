@@ -2,10 +2,6 @@
 #![allow(unused_variables)]
 #![allow(unused_mut)]
 
-use std::{ops::Range, usize};
-
-mod turnstile;
-
 type RegexIndex = usize;
 
 const REGEX_COL_SIZE: RegexIndex = 130;
@@ -21,12 +17,6 @@ impl RegexCol {
             ts: [0; REGEX_COL_SIZE],
         }
     }
-
-    fn fill_range(&mut self, range: Range<char>, state: RegexIndex) {
-        for i in range.map(|x| x as usize) {
-            self.ts[i] = state;
-        }
-    }
 }
 
 struct Regex {
@@ -34,14 +24,6 @@ struct Regex {
 }
 
 impl Regex {
-    fn new() -> Self {
-        Self { cols: Vec::new() }
-    }
-
-    fn push(&mut self, col: RegexCol) {
-        self.cols.push(col);
-    }
-
     fn dump(&self) {
         for symbol in 0..REGEX_COL_SIZE {
             print!("{} => ", symbol);
@@ -51,22 +33,35 @@ impl Regex {
             println!();
         }
     }
-    fn compile_regex(src: &str) -> Self {
-        /*
-        let events = ['a' as usize, 'b' as usize, 'c' as usize, REGEX_END];
+
+    fn compile(src: &str) -> Self {
+        let mut result = Self { cols: Vec::new() };
 
         // failed state
-        regex.push(RegexCol::new());
+        result.cols.push(RegexCol::new());
 
         // FsmColumn 1
-        for event in events.iter() {
+        for char in src.chars() {
             let mut col = RegexCol::new();
-            col.ts[*event] = regex.cols.len() + 1;
-            regex.push(col);
-        }
-        */
 
-        todo!()
+            match char {
+                '$' => {
+                    col.ts[REGEX_END] = result.cols.len() + 1;
+                }
+                '.' => {
+                    for i in 32..129 {
+                        col.ts[i] = result.cols.len() + 1;
+                    }
+                }
+                _ => {
+                    col.ts[char as usize] = result.cols.len() + 1;
+                }
+            }
+
+            result.cols.push(col);
+        }
+
+        result
     }
 
     fn match_str(&self, input: &str) -> bool {
@@ -90,24 +85,14 @@ impl Regex {
 }
 
 fn main() {
-    let mut regex = Regex::compile_regex("abc$");
+    let mut regex = Regex::compile("a.cd$");
+    regex.dump();
 
-    // regex.dump();
+    println!("{}", "-".repeat(20));
 
     let inputs = ["hello world", "abc", "abcd"];
 
     for input in inputs {
         println!("{} => {:?}", input, regex.match_str(input));
     }
-
-    // let mut col = FsmCol::new();
-
-    // col.fill_range();
-    // fsm.push();
-
-    // turnstile::play();
-
-    // println!("{:?}", ('a'..'z').map(|x| x as u8).collect::<Vec<u8>>());
-
-    // println!("{:?}", vec!['a', 'b', 'c'].into_iter().map(|c| c as u8).rev().collect::<Vec<u8>>());
 }
